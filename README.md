@@ -15,9 +15,3 @@ java -jar app/build/libs/app.jar
 # or
 java -jar app/build/libs/app.jar '(A&B)|C'
 ```
-
----
-
-## Dependencies
-
-- poetry
