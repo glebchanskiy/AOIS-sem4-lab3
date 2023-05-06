@@ -1,4 +1,4 @@
-# Minimaliztor - LR3
+# Minimizator - LR3
 
 ## Install
 
