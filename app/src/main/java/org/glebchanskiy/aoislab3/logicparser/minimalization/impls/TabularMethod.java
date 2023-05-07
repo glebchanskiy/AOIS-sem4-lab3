@@ -4,7 +4,7 @@ import org.glebchanskiy.aoislab3.logicparser.FormulasOperations;
 import org.glebchanskiy.aoislab3.logicparser.LogicFormula;
 import org.glebchanskiy.aoislab3.logicparser.LogicParser;
 import org.glebchanskiy.aoislab3.logicparser.minimalization.Minimizator;
-import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.karnoutil.DataTable;
+import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.utils.DataTable;
 import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 
 import java.util.*;

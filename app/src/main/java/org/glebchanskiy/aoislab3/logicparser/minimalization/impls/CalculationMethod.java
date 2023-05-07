@@ -2,215 +2,118 @@ package org.glebchanskiy.aoislab3.logicparser.minimalization.impls;
 
 
 import org.glebchanskiy.aoislab3.logicparser.minimalization.Minimizator;
+import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.utils.Gluer;
 import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class CalculationMethod implements Minimizator {
+
+    Gluer gluer;
+
+    public CalculationMethod() {
+        this.gluer = new Gluer();
+    }
+
     @Override
     public List<List<String>> minimise(List<List<String>> constituents, FormulaType type) {
-        List<List<String>> gl = gluing(constituents);
-        System.out.println(type.name() + " after gluing:" + gl);
-        gl = removeRedundancy(gl, type);
-        gl = gluing(gl);
-        return gl;
-    }
-
-
-    public List<List<String>> gluing(List<List<String>> constituents) {
-        Set<List<String>> result = new HashSet<>(constituents);
-        Set<List<String>> exclude = new HashSet<>();
-
-        for (int i = 0; i < constituents.size(); i++) {
-            List<String> implicantI = constituents.get(i);
-
-            for (int j = 0; j < constituents.size(); j++) {
-                if (i == j)
-                    continue;
-                List<String> implicantJ = constituents.get(j);
-                List<String> fusion = tryGluing(implicantI, implicantJ);
-
-//                System.out.println("try gl:  " + implicantI + " : " + implicantJ + "   ->  " + fusion);
-                if (fusion != null) {
-//                    System.out.println("add: " + fusion);
-                    exclude.add(implicantI);
-                    exclude.add(implicantJ);
-                    result.add(fusion);
-
-                }
-            }
-        }
-        result.removeAll(exclude);
-        return result.stream().toList();
-    }
-
-    public boolean isOpposite(String firstTerm, String secondTerm) {
-//        System.out.println(firstTerm + "  " + secondTerm);
-        return Objects.equals("!"+firstTerm, secondTerm) || Objects.equals(firstTerm, "!" + secondTerm);
-    }
-
-    public List<String> tryGluing(List<String> firstImplicant, List<String> secondImplicant) {
-        int differencesCount = 0;
-        int differenceIndex = -1;
-        if (firstImplicant.size() == 1 || secondImplicant.size() == 1)
-            return null;
-
-        for (int i = 0; i < firstImplicant.size(); i++) {
-            String term1 = firstImplicant.get(i);
-            String term2 = secondImplicant.get(i);
-
-            if (!term1.equals(term2)) {
-                if (isOpposite(term1, term2)) {
-//
-                    differencesCount++;
-                    differenceIndex = i;
-
-                    if (differencesCount > 1) {
-                        return null;
-                    }
-                } else return null;
-            }
-        }
-
-        if (differencesCount == 1) {
-            List<String> result = new ArrayList<>(firstImplicant);
-            result.remove(firstImplicant.get(differenceIndex));
-            return result;
-        } else {
-            return null;
-        }
+        List<List<String>> glued = gluer.gluing(constituents);
+        System.out.println(type.name() + " after gluing:" + glued); // для вывода ответа
+        return gluer.gluing(removeRedundancy(glued, type));
     }
 
     public List<List<String>> removeRedundancy(List<List<String>> constituents, FormulaType type) {
-        if (constituents.size() == 1)
-            return constituents;
+        if (constituents.size() == 1) return constituents;
 
         List<List<String>> result = new ArrayList<>(constituents);
-        Set<List<String>> exclude = new HashSet<>();
 
-
-        for (int i = 0; i < constituents.size(); i++) {
-            List<String> implicantI = constituents.get(i);
-            Map<String, Integer> valuesMap = createValuesMap(implicantI, type);
-
-            boolean formulaValue = formulaValue(
-                    constituents.stream().filter(c -> c != implicantI).collect(Collectors.toList()), valuesMap, type);
-
-            if (formulaValue) {
-                exclude.add(implicantI);
+        for (List<String> implicant : constituents) {
+            // удаляем, если импликант был избыточным для формулы
+            if (isSelfSufficientFormula(excludeImplicant(result, implicant), createValuesMap(implicant, type), type)) {
+                result.remove(implicant);
             }
         }
-//        System.out.println("before remove: " + result);
-        result.removeAll(exclude);
-//        System.out.println("after remove: " + result);
+
         return result;
     }
 
-    private boolean formulaValue(List<List<String>> constituents, Map<String, Integer> valuesMap, FormulaType type) {
-        List<Boolean> tempList = new ArrayList<>(List.of(false));
-        List<Boolean> test = new ArrayList<>();
-//        System.out.println( "impl:" + constituents);
+
+    private boolean isSelfSufficientFormula(List<List<String>> constituents,
+                                            Map<String, Boolean> implicantVariableValues,
+                                            FormulaType type) {
+        if (constituents.isEmpty())
+            return false;
+
+        boolean formulaValue = false;
 
         for (List<String> implicant : constituents) {
-            tempList.add(implicantValue(implicant, valuesMap, type));
-
-//            if (tempList.size() == 2) {
-            if(type == FormulaType.PDNF) {
-                tempList.set(0, tempList.get(0) && tempList.get(1));
-                test.add(tempList.get(0) && tempList.get(1));
-            }
-            else {
-                tempList.set(0, tempList.get(0) || tempList.get(1));
-                test.add(tempList.get(0) || tempList.get(1));
-            }
-            tempList.remove(1);
-//            }
+            formulaValue = formulaValue || implicantValue(implicant, implicantVariableValues, type);
         }
-//        System.out.println("bools: " + test);
-        return type == FormulaType.PDNF ? tempList.get(0) : !tempList.get(0);
+        return formulaValue;
     }
 
-    public Map<String, Integer> createValuesMap(List<String> implicant, FormulaType type) {
-        Map<String, Integer> valuesMap = new HashMap<>();
+    public Map<String, Boolean> createValuesMap(List<String> implicant, FormulaType type) {
+        Map<String, Boolean> valuesMap = new HashMap<>();
 
         for (String term : implicant) {
             if (term.startsWith("!")) {
                 if (type == FormulaType.PDNF) {
-                    valuesMap.put(term, 1);
-                    valuesMap.put(term.substring(1), 0);
+                    valuesMap.put(term, true);
+                    valuesMap.put(term.substring(1), false);
                 } else if (type == FormulaType.PCNF) {
-                    valuesMap.put(term, 0);
-                    valuesMap.put(term.substring(1), 1);
+                    valuesMap.put(term, false);
+                    valuesMap.put(term.substring(1), true);
                 }
             } else {
                 if (type == FormulaType.PDNF) {
-                    valuesMap.put(term, 1);
-                    valuesMap.put("!" + term, 0);
+                    valuesMap.put(term, true);
+                    valuesMap.put("!" + term, false);
                 } else if (type == FormulaType.PCNF) {
-                    valuesMap.put(term, 0);
-                    valuesMap.put("!" + term, 1);
+                    valuesMap.put(term, false);
+                    valuesMap.put("!" + term, true);
                 }
             }
         }
         return valuesMap;
     }
 
-//    public Map<String, Integer> createValuesMap(List<List<String>> constituents, List<String> implicantI) {
-//        Map<String, Integer> valuesMap = new HashMap<>();
-//        for (List<String> implicant : constituents) {
-//            for (String term : implicant) {
-//                if (term.startsWith("!")) {
-//                    valuesMap.put(term, 1);
-//                    valuesMap.put(term.substring(1), 0);
-//                } else {
-//                    valuesMap.put(term, 1);
-//                    valuesMap.put("!" + term, 0);
-//                }
-//            }
-//        }
-//        return valuesMap;
-//    }
-
-    public boolean implicantValue(List<String> implicant, Map<String, Integer> valuesMap, FormulaType type) {
-        switch (type) {
-            case PDNF -> {
-                return disjunction(implicant, valuesMap) == 1;
-            }
-            case PCNF -> {
-                return conjunction(implicant, valuesMap) == 0;
-            }
-            default -> {
-                return false;
-            }
-        }
+    public boolean implicantValue(List<String> implicant, Map<String, Boolean> valuesMap, FormulaType type) {
+        boolean result = switch (type) {
+            case PDNF -> disjunction(implicant, valuesMap);
+            case PCNF -> conjunction(implicant, valuesMap);
+        };
+        return type == FormulaType.PDNF ? result : !result;
     }
 
-    public Integer disjunction(List<String> implicant, Map<String, Integer> valuesMap) {
-        Integer first = valuesMap.get(implicant.get(0));
-        Integer second = valuesMap.get(implicant.get(0));
-//        System.out.println("dis(" + valuesMap.get(implicant.get(0)) + ":" + valuesMap.get(implicant.get(1)) + ")");
+    public Boolean disjunction(List<String> implicant, Map<String, Boolean> valuesMap) {
+        Boolean first = valuesMap.get(implicant.get(0));
+        Boolean second = valuesMap.get(implicant.get(1));
+
         if (first == null) {
-            first = implicant.get(0).startsWith("!") ? 1 : 0;
+            first = implicant.get(0).startsWith("!");
         }
         if (second == null) {
-            second = implicant.get(1).startsWith("!") ? 1 : 0;
+            second = implicant.get(1).startsWith("!");
         }
 
-        return first * second;
+        return first && second;
     }
 
-    public Integer conjunction(List<String> implicant, Map<String, Integer> valuesMap) {
-        Integer first = valuesMap.get(implicant.get(0));
-        Integer second = valuesMap.get(implicant.get(0));
-//        System.out.println("dis(" + valuesMap.get(implicant.get(0)) + ":" + valuesMap.get(implicant.get(1)) + ")");
+    public Boolean conjunction(List<String> implicant, Map<String, Boolean> valuesMap) {
+        Boolean first = valuesMap.get(implicant.get(0));
+        Boolean second = valuesMap.get(implicant.get(1));
+
         if (first == null) {
-            first = implicant.get(0).startsWith("!") ? 1 : 0;
+            first = !implicant.get(0).startsWith("!");
         }
         if (second == null) {
-            second = implicant.get(1).startsWith("!") ? 1 : 0;
+            second = !implicant.get(1).startsWith("!");
         }
 
-        return first + second >= 1 ? 1 : 0;
+        return first || second;
+    }
+
+    public List<List<String>> excludeImplicant(List<List<String>> constituents, List<String> implicant) {
+        return constituents.stream().filter(c -> c != implicant).toList();
     }
 }

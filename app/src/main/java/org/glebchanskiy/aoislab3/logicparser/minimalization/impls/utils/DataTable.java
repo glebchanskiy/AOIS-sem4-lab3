@@ -1,4 +1,4 @@
-package org.glebchanskiy.aoislab3.logicparser.minimalization.impls.karnoutil;
+package org.glebchanskiy.aoislab3.logicparser.minimalization.impls.utils;
 
 public class DataTable {
     public final int[][] table;

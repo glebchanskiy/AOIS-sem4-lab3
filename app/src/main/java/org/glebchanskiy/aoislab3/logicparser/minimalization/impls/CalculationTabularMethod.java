@@ -1,16 +1,19 @@
 package org.glebchanskiy.aoislab3.logicparser.minimalization.impls;
 
 import org.glebchanskiy.aoislab3.logicparser.minimalization.Minimizator;
+import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.utils.Gluer;
 import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 
 import java.util.*;
 
 public class CalculationTabularMethod implements Minimizator {
 
-    CalculationMethod gluer;
+    Gluer gluer;
+
     public CalculationTabularMethod() {
-        this.gluer = new CalculationMethod();
+        this.gluer = new Gluer();
     }
+
     @Override
     public List<List<String>> minimise(List<List<String>> constituents, FormulaType type){
         List<List<String>> glued = gluer.gluing(gluer.gluing(constituents));
