@@ -5,6 +5,7 @@ import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.utils.Gluer;
 import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 public class CalculationTabularMethod implements Minimizator {
 
@@ -15,84 +16,73 @@ public class CalculationTabularMethod implements Minimizator {
     }
 
     @Override
-    public List<List<String>> minimise(List<List<String>> constituents, FormulaType type){
-        List<List<String>> glued = gluer.gluing(gluer.gluing(constituents));
-
-        List<List<String>> result =  new ArrayList<>();
-
-        int[][] table = generateTable(glued, constituents);
-
-        print(table, glued, constituents);
-
-        for(int k = 0; k < glued.size(); k++) {
-            boolean unique = false;
-            for (int i = 0; i < constituents.size(); i++) {
-                List<Integer> coincidences = findCoincidences(glued, table, i, k);
-
-                if(coincidences.size() == 1){
-                    unique = true;
-                }
-            }
-            if(unique){
-                result.add(glued.get(k));
-            }
-            else {
-                for (int i = 0; i < constituents.size(); i++) {
-                    table[k][i] = 0;
-                }
-            }
-        }
-
-        return result;
+    public List<List<String>> minimise(List<List<String>> constituents, FormulaType type) {
+        return quine(
+                gluer.gluing(gluer.gluing(constituents)),
+                constituents
+        );
     }
 
-    public void print(int[][] table, List<List<String>>  glued, List<List<String>> constituents){
-        System.out.print("\t\t");
-        for(List<String> implicant: constituents){
-            System.out.print(implicant + "\t");
-        }
-
-        System.out.println();
-
-        Iterator<List<String>> iterator = glued.iterator();
-        for (int[] ints : table) {
-            System.out.print(iterator.next() + "\t");
-            for (int anInt : ints) {
-                System.out.print("\t\t" + anInt);
-            }
-            System.out.println();
-        }
+    public List<List<String>> quine(List<List<String>> simpleImplicants, List<List<String>> constituents) {
+        List<List<Boolean>> implicantTable = makeImplicantTable(simpleImplicants, constituents);
+        printImplicantTable(implicantTable, constituents, simpleImplicants);
+        return findUniqueImplicants(
+                simpleImplicants,
+                implicantTable
+        );
     }
 
-    private int[][] generateTable(List<List<String>> minimizeList,List<List<String>> constituents){
-        int[][] table = new int[minimizeList.size()][constituents.size()];
-
-        for (int[] value : table) {
-            Arrays.fill(value, 0);
-        }
-
-        for (int i =0; i < minimizeList.size(); i++){
-            for(int j = 0; j < constituents.size(); j++){
-                if(new HashSet<>(constituents.get(j)).containsAll(minimizeList.get(i))){
-                    table[i][j] = 1;
-                }
-            }
-        }
-        return table;
+    public List<List<String>> findUniqueImplicants(List<List<String>> simpleImplicants, List<List<Boolean>> implicantTable) {
+        return simpleImplicants.stream()
+                .filter(implicant -> isImplicantUnique(simpleImplicants.indexOf(implicant), implicantTable))
+                .toList();
     }
 
-    public List<Integer> findCoincidences(List<List<String>> minimizeList, int[][] table, int i, int k){
-        List<Integer> coincidences = new ArrayList<>();
-        for (int j = k; j < minimizeList.size(); j++) {
-            if(table[j][i] == 1 && table[k][i] == 1){
-                coincidences.add(1);
-            }
+    private boolean isImplicantUnique(int implicantIndex, List<List<Boolean>> implicantTable) {
+        return IntStream.range(0, implicantTable.get(0).size())
+                .anyMatch(constituentIndex -> isMatchFound(implicantIndex, constituentIndex, implicantTable));
+    }
+
+    public boolean isMatchFound(int implicantIndex, int constituentIndex, List<List<Boolean>> implicantTable) {
+        List<Boolean> implicantColumn = implicantTable.stream().map(row -> row.get(constituentIndex)).toList();
+        List<Boolean> searchedImplicants = implicantColumn.subList(0, implicantIndex);
+        return implicantColumn.stream().filter(b -> b && searchedImplicants.contains(true)).count() == 1;
+    }
+
+    private List<List<Boolean>> makeImplicantTable(List<List<String>> simpleImplicants, List<List<String>> constituents) {
+        return simpleImplicants.stream()
+                .map(simpleImplicant -> constituents.stream()
+                        .map(implicant -> isImplicantContainsSimpleImplicant(simpleImplicant, implicant))
+                        .toList()
+                ).toList();
+    }
+
+    private boolean isImplicantContainsSimpleImplicant(List<String> simpleImplicant, List<String> implicant) {
+        return new HashSet<>(implicant).containsAll(simpleImplicant);
+    }
+
+    private void printImplicantTable(List<List<Boolean>> implicantTable, List<List<String>> constituents, List<List<String>> simpleImplicants) {
+        StringBuilder output = new StringBuilder();
+
+        output.append("-------------------".repeat(constituents.size())).append('\n');
+
+        output.append('\t').append('|');
+        // исходные конституэнты
+        for (List<String> implicant : constituents)
+            output.append('\t').append(implicant);
+
+        output.append('\n').append("-------------------".repeat(constituents.size())).append('\n');
+
+        Iterator<List<Boolean>> row = implicantTable.listIterator();
+        Iterator<List<String>> simpleImplicant = simpleImplicants.listIterator();
+
+        while (row.hasNext()) {
+            output.append(simpleImplicant.next()).append('\t').append('|').append('\t');
+
+            for (Boolean values : row.next())
+                output.append("   ").append(Boolean.TRUE.equals(values) ? 1 : 0).append("\t\t");
+            output.append('\n');
         }
-        for (int j = 0; j < k; j++) {
-            if(table[j][i] == 1 && table[k][i] == 1){
-                coincidences.add(1);
-            }
-        }
-        return coincidences;
+        System.out.println(output);
     }
 }
