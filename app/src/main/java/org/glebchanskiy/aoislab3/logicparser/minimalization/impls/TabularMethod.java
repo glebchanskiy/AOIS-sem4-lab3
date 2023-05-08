@@ -205,7 +205,7 @@ public class TabularMethod implements Minimizator {
                 .append('\n').append('\t').append('|');
 
         output.append("\t");
-        for (String term : List.of("B", "B", "!B", "B")) {
+        for (String term : List.of("B", "B", "!B", "!B")) {
             output.append(term).append("\t\t");
         }
 
