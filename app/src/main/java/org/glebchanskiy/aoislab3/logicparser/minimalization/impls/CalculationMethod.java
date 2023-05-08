@@ -17,7 +17,7 @@ public class CalculationMethod implements Minimizator {
 
     @Override
     public List<List<String>> minimise(List<List<String>> constituents, FormulaType type) {
-        List<List<String>> glued = gluer.gluing(constituents);
+        List<List<String>> glued = gluer.gluing(gluer.gluing(constituents));
         System.out.println(type.name() + " after gluing:" + glued); // для вывода ответа
         return gluer.gluing(removeRedundancy(glued, type));
     }
@@ -86,6 +86,11 @@ public class CalculationMethod implements Minimizator {
     }
 
     public Boolean disjunction(List<String> implicant, Map<String, Boolean> valuesMap) {
+        if (implicant.size() == 1)
+            return valuesMap.get(implicant.get(0)) == null ?
+                    implicant.get(0).startsWith("!") :
+                    valuesMap.get(implicant.get(0));
+
         Boolean first = valuesMap.get(implicant.get(0));
         Boolean second = valuesMap.get(implicant.get(1));
 
@@ -100,6 +105,11 @@ public class CalculationMethod implements Minimizator {
     }
 
     public Boolean conjunction(List<String> implicant, Map<String, Boolean> valuesMap) {
+        if (implicant.size() == 1)
+            return valuesMap.get(implicant.get(0)) == null ?
+                    !implicant.get(0).startsWith("!") :
+                    valuesMap.get(implicant.get(0));
+
         Boolean first = valuesMap.get(implicant.get(0));
         Boolean second = valuesMap.get(implicant.get(1));
 
