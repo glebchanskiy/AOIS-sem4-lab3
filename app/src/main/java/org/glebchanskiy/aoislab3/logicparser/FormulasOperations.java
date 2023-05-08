@@ -4,9 +4,8 @@ package org.glebchanskiy.aoislab3.logicparser;
 import org.glebchanskiy.aoislab3.logicparser.ast.*;
 import org.glebchanskiy.aoislab3.logicparser.util.TableRow;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 
 public class FormulasOperations {
@@ -237,10 +236,29 @@ public class FormulasOperations {
     }
 
     public static String fromListToString(List<List<String>> formula, boolean isPdnf) {
+        Set<List<String>> orderedFormula = new TreeSet<>(
+                (list1, list2) -> {
+                    int size1 = list1.size();
+                    int size2 = list2.size();
+                    int minSize = Math.min(size1, size2);
+                    if (size1 == size2) {
+                        for (int i = 0; i < minSize; i++) {
+                            int cmp = list1.get(i).compareTo(list2.get(i));
+                            if (cmp != 0) {
+                                return cmp;
+                            }
+                        }
+                    }
+                    return Integer.compare(size1, size2);
+                }
+                );
+
+        orderedFormula.addAll(formula);
+
         String internalConnection = isPdnf ? "&" : "|";
         String externalConnection = !isPdnf ? "&" : "|";
         StringBuilder output = new StringBuilder();
-        for (List<String> i : formula) {
+        for (List<String> i : orderedFormula) {
             output.append("(");
             for (String j : i) {
                 output.append(j);
