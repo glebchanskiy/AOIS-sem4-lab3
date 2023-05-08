@@ -6,6 +6,7 @@ import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 
 import java.util.*;
 import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class CalculationTabularMethod implements Minimizator {
 
@@ -44,9 +45,12 @@ public class CalculationTabularMethod implements Minimizator {
     }
 
     public boolean isMatchFound(int implicantIndex, int constituentIndex, List<List<Boolean>> implicantTable) {
-        List<Boolean> implicantColumn = implicantTable.stream().map(row -> row.get(constituentIndex)).toList();
-        List<Boolean> searchedImplicants = implicantColumn.subList(0, implicantIndex);
-        return implicantColumn.stream().filter(b -> b && searchedImplicants.contains(true)).count() == 1;
+        return Stream.concat(
+                        implicantTable.subList(implicantIndex, implicantTable.size()).stream(),
+                        implicantTable.subList(0, implicantIndex).stream()
+                )
+                .filter(list -> list.get(constituentIndex) && implicantTable.get(implicantIndex).get(constituentIndex))
+                .count() == 1;
     }
 
     private List<List<Boolean>> makeImplicantTable(List<List<String>> simpleImplicants, List<List<String>> constituents) {
