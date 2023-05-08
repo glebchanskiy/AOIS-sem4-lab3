@@ -37,17 +37,17 @@ public class App {
     }
 
     private static void printLab3Part(LogicFormula formula) {
-        System.out.println("\n\n_____________________________________________________________________");
-        System.out.println("_______________________ Minimization ________________________________");
+        System.out.println("\n\n________________________________________________________________________________");
+        System.out.println("_______________________ Minimization ___________________________________________");
 
         System.out.println("\nCalculation Method\n");
         printMinimalFormula(new CalculationMethod(), formula);
 
-        System.out.println("_____________________________________________________________________");
+        System.out.println("________________________________________________________________________________");
         System.out.println("\nCalculation Tabular Method\n");
         printMinimalFormula(new CalculationTabularMethod(), formula);
 
-        System.out.println("_____________________________________________________________________");
+        System.out.println("________________________________________________________________________________");
         System.out.println("\nTabular Method\n");
         printMinimalFormula(new TabularMethod(), formula);
     }
@@ -68,8 +68,8 @@ public class App {
 
 
     private static void printLab2Part(LogicFormula formula) {
-        System.out.println("\n\n_____________________________________________________________________");
-        System.out.println("_________________________ Lab 2 Part ________________________________");
+        System.out.println("\n\n________________________________________________________________________________");
+        System.out.println("_________________________ Lab 2 Part ___________________________________________");
         System.out.println();
 
 
