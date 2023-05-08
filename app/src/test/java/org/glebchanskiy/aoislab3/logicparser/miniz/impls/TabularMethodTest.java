@@ -3,16 +3,15 @@ package org.glebchanskiy.aoislab3.logicparser.miniz.impls;
 import org.glebchanskiy.aoislab3.logicparser.FormulasOperations;
 import org.glebchanskiy.aoislab3.logicparser.LogicParser;
 import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.CalculationMethod;
-import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.utils.Gluer;
 import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class CalculationMethodTest {
+class TabularMethodTest {
     static CalculationMethod minimizator;
 
     static List<List<String>> example0pcnf;

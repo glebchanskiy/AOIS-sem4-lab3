@@ -10,10 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class CalculationMethodTest {
+public class GluerTest {
     static CalculationMethod minimizator;
+    static Gluer gluer;
 
     static List<List<String>> example0pcnf;
     static String example0Result;
@@ -31,6 +32,7 @@ class CalculationMethodTest {
     @BeforeAll
     static void setUp() {
         minimizator = new CalculationMethod();
+        gluer = new Gluer();
 
         example0pcnf = FormulasOperations.getPcnfAsList(LogicParser.parse("(A&B)|C"));
         example0Result = "(A|C)&(B|C)";
@@ -50,43 +52,37 @@ class CalculationMethodTest {
 
     }
 
+
     @Test
-    void calculationMinimiseTest0() {
+    void gluingTest0() {
         assertEquals(
-                example0Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example0pcnf, FormulaType.PCNF), false)
-        );
+                "[[A, C], [B, C]]",
+                gluer.gluing(example0pcnf).toString());
     }
 
     @Test
-    void calculationMinimiseTest1() {
+    void gluingTest1() {
         assertEquals(
-                example1Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example1pdnf, FormulaType.PDNF), true)
-        );
+                "[[A, C], [A, B]]",
+                gluer.gluing(example1pdnf).toString());
     }
 
     @Test
-    void calculationMinimiseTest2() {
+    void gluingTest2() {
         assertEquals(
-                example2Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example2pcnf, FormulaType.PCNF), false)
-        );
+                "[[A, !C], [B, !C], [!A, B]]",
+                gluer.gluing(example2pcnf).toString());
     }
-
     @Test
-    void calculationMinimiseTest3() {
+    void gluingTest3() {
         assertEquals(
-                example3Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example3pcnf, FormulaType.PCNF), false)
-        );
+                "[[A, B], [A, C], [B, C], [A, !C], [A, !B]]",
+                gluer.gluing(example3pcnf).toString());
     }
-
     @Test
-    void calculationMinimiseTest4() {
+    void gluingTest4() {
         assertEquals(
-                example4Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example4pdnf, FormulaType.PDNF), true)
-        );
+                "[[A, B, C]]",
+                gluer.gluing(example4pdnf).toString());
     }
 }
