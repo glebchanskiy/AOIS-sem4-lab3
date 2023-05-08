@@ -38,17 +38,21 @@ public class App {
 
     private static void printLab3Part(LogicFormula formula) {
         System.out.println("\n\n________________________________________________________________________________");
-        System.out.println("_______________________ Minimization ___________________________________________");
+        System.out.println("_______________________ Minimization ___________________________________________\n\n");
 
-        System.out.println("\nCalculation Method\n");
+        System.out.println("\n================================================================================");
+        System.out.println("Calculation Method");
+        System.out.println("================================================================================\n");
         printMinimalFormula(new CalculationMethod(), formula);
 
-        System.out.println("________________________________________________________________________________");
-        System.out.println("\nCalculation Tabular Method\n");
+        System.out.println("\n================================================================================");
+        System.out.println("Calculation Tabular Method");
+        System.out.println("================================================================================\n");
         printMinimalFormula(new CalculationTabularMethod(), formula);
 
-        System.out.println("________________________________________________________________________________");
-        System.out.println("\nTabular Method\n");
+        System.out.println("\n================================================================================");
+        System.out.println("Tabular Method");
+        System.out.println("================================================================================\n");
         printMinimalFormula(new TabularMethod(), formula);
     }
 
