@@ -16,7 +16,7 @@ public class TabularMethod implements Minimizator {
 
     @Override
     public List<List<String>> minimise(List<List<String>> constituents, FormulaType type) {
-        LogicFormula formula = LogicParser.parse(FormulasOperations.fromListToString(constituents, (type == FormulaType.PDNF)));
+        LogicFormula formula = LogicParser.parse(FormulasOperations.fromListToString(constituents, type));
         return minimiseByKarno(makeKarnoTable(formula.getTruthTable(), type), type);
     }
 

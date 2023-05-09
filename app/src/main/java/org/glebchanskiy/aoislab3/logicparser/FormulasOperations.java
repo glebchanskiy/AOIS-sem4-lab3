@@ -2,10 +2,10 @@ package org.glebchanskiy.aoislab3.logicparser;
 
 
 import org.glebchanskiy.aoislab3.logicparser.ast.*;
+import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 import org.glebchanskiy.aoislab3.logicparser.util.TableRow;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 
 public class FormulasOperations {
@@ -22,8 +22,8 @@ public class FormulasOperations {
 
         for (TableRow row : logicFormula.getTruthTable()) {
             for (Boolean variable : row.getVariablesValues())
-                output.append(variable ? "1" : "0").append("    ");
-            output.append(row.isFunctionTakeTrueValue() ? "1" : "0").append("\n");
+                output.append(Boolean.TRUE.equals(variable) ? "1" : "0").append("    ");
+            output.append(Boolean.TRUE.equals(row.isFunctionTakeTrueValue()) ? "1" : "0").append("\n");
         }
 
         return output.toString();
@@ -33,7 +33,7 @@ public class FormulasOperations {
     public static String getIndex(LogicFormula logicFormula) {
 
         String index = Arrays.stream(logicFormula.getTruthTable().getIndex())
-                .map(b -> b ? "1" : "0")
+                .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
                 .reduce((a, b) -> a + b)
                 .orElse("");
 
@@ -48,7 +48,7 @@ public class FormulasOperations {
         for (int i = 0; i < values.size(); i++) {
             output.append('(');
             for (int j = 0; j < values.get(i).length; j++) {
-                output.append(values.get(i)[j] ? "!" + (char)(65+j) : (char)(65+j));
+                output.append(Boolean.TRUE.equals(values.get(i)[j]) ? "!" + (char)(65+j) : (char)(65+j));
                 if (j != values.get(i).length - 1)
                     output.append("|");
             }
@@ -64,10 +64,10 @@ public class FormulasOperations {
 
         List<List<String>> pcnf = new ArrayList<>();
 
-        for (int i = 0; i < values.size(); i++) {
+        for (Boolean[] value : values) {
             List<String> inner = new ArrayList<>();
-            for (int j = 0; j < values.get(i).length; j++) {
-                inner.add(values.get(i)[j] ? "!" + (char)(65+j) : (char)(65+j) + "");
+            for (int j = 0; j < value.length; j++) {
+                inner.add(Boolean.TRUE.equals(value[j]) ? "!" + (char) (65 + j) : (char) (65 + j) + "");
             }
             pcnf.add(inner);
         }
@@ -82,7 +82,7 @@ public class FormulasOperations {
         for (int i = 0; i < values.size(); i++) {
             output.append('(');
             for (int j = 0; j < values.get(i).length; j++) {
-                output.append(values.get(i)[j] ? (char)(65+j) : "!" + (char)(65+j));
+                output.append(Boolean.TRUE.equals(values.get(i)[j]) ? (char)(65+j) : "!" + (char)(65+j));
                 if (j != values.get(i).length - 1)
                     output.append("&");
             }
@@ -98,10 +98,10 @@ public class FormulasOperations {
 
         List<List<String>> pdnf = new ArrayList<>();
 
-        for (int i = 0; i < values.size(); i++) {
+        for (Boolean[] value : values) {
             List<String> inner = new ArrayList<>();
-            for (int j = 0; j < values.get(i).length; j++) {
-                inner.add(Boolean.TRUE.equals(values.get(i)[j]) ? (char)(65+j)+"" : "!" + (char)(65+j));
+            for (int j = 0; j < value.length; j++) {
+                inner.add(Boolean.TRUE.equals(value[j]) ? (char) (65 + j) + "" : "!" + (char) (65 + j));
             }
             pdnf.add(inner);
         }
@@ -110,12 +110,12 @@ public class FormulasOperations {
 
     public static String getPdnfBin(LogicFormula logicFormula) {
         List<Boolean[]> pdnf = logicFormula.getTruthTable().getTruths();
-        List<String> pdnf_inner_brackets = new ArrayList<>();
+        List<String> pdnfInnerBrackets = new ArrayList<>();
 
         pdnf.forEach(row ->
-                pdnf_inner_brackets.add(
+                pdnfInnerBrackets.add(
                         Arrays.stream(row)
-                                .map(b -> b ? "1" : "0")
+                                .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
                                 .reduce((accum, bin) -> accum += bin)
                                 .orElse("")
                 )
@@ -123,7 +123,7 @@ public class FormulasOperations {
 
         StringBuilder result = new StringBuilder();
 
-        for (String bracket : pdnf_inner_brackets)
+        for (String bracket : pdnfInnerBrackets)
             if (result.isEmpty())
                 result.append("PDNF: ").append("(").append(bracket).append(")");
             else
@@ -135,30 +135,30 @@ public class FormulasOperations {
 
     public static String getPdnfDig(LogicFormula logicFormula) {
         List<Boolean[]> pdnf = logicFormula.getTruthTable().getTruths();
-        List<Integer> pdnf_inner_brackets_dig = new ArrayList<>();
+        List<Integer> pdnfInnerBracketsDig = new ArrayList<>();
 
         pdnf.forEach(row ->
-                pdnf_inner_brackets_dig.add(
+                pdnfInnerBracketsDig.add(
                         toDecimal(
                                 Arrays.stream(row)
-                                        .map(b -> b ? "1" : "0")
+                                        .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
                                         .reduce((accum, bin) -> accum += bin)
                                         .orElse("")
                         )
                 )
         );
 
-        return "PDNF: " + pdnf_inner_brackets_dig;
+        return "PDNF: " + pdnfInnerBracketsDig;
     }
 
     public static String getPcnfBin(LogicFormula logicFormula) {
         List<Boolean[]> pcnf = logicFormula.getTruthTable().getFalses();
-        List<String> pcnf_inner_brackets = new ArrayList<>();
+        List<String> pcnfInnerBrackets = new ArrayList<>();
 
         pcnf.forEach(row ->
-                pcnf_inner_brackets.add(
+                pcnfInnerBrackets.add(
                         Arrays.stream(row)
-                                .map(b -> b ? "1" : "0")
+                                .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
                                 .reduce((accum, bin) -> accum += bin)
                                 .orElse("")
                 )
@@ -166,7 +166,7 @@ public class FormulasOperations {
 
         StringBuilder result = new StringBuilder();
 
-        for (String bracket : pcnf_inner_brackets)
+        for (String bracket : pcnfInnerBrackets)
             if (result.isEmpty())
 
                 result.append("PCNF: ").append("(").append(bracket).append(")");
@@ -179,20 +179,20 @@ public class FormulasOperations {
 
     public static String getPcnfDig(LogicFormula logicFormula) {
         List<Boolean[]> pcnf = logicFormula.getTruthTable().getFalses();
-        List<Integer> pcnf_inner_brackets_dig = new ArrayList<>();
+        List<Integer> pcnfInnerBracketsDig = new ArrayList<>();
 
         pcnf.forEach(row ->
-                pcnf_inner_brackets_dig.add(
+                pcnfInnerBracketsDig.add(
                         toDecimal(
                                 Arrays.stream(row)
-                                        .map(b -> b ? "1" : "0")
+                                        .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
                                         .reduce((accum, bin) -> accum += bin)
                                         .orElse("")
                         )
                 )
         );
 
-        return "PCNF: " + pcnf_inner_brackets_dig;
+        return "PCNF: " + pcnfInnerBracketsDig;
     }
 
     private static int toDecimal(String row) {
@@ -235,28 +235,14 @@ public class FormulasOperations {
         }
     }
 
-    public static String fromListToString(List<List<String>> formula, boolean isPdnf) {
-        Set<List<String>> orderedFormula = new TreeSet<>(
-                (list1, list2) -> {
-                    int size1 = list1.size();
-                    int size2 = list2.size();
-                    int minSize = Math.min(size1, size2);
-                    if (size1 == size2) {
-                        for (int i = 0; i < minSize; i++) {
-                            int cmp = list1.get(i).compareTo(list2.get(i));
-                            if (cmp != 0) {
-                                return cmp;
-                            }
-                        }
-                    }
-                    return Integer.compare(size1, size2);
-                }
-                );
+    public static String fromListToString(List<List<String>> formula, FormulaType type) {
+        Set<List<String>> orderedFormula = new TreeSet<>(new FormulaOrderComparator());
 
         orderedFormula.addAll(formula);
 
-        String internalConnection = isPdnf ? "&" : "|";
-        String externalConnection = !isPdnf ? "&" : "|";
+        String internalConnection = type == FormulaType.PDNF ? "&" : "|";
+        String externalConnection = type == FormulaType.PCNF ? "&" : "|";
+
         StringBuilder output = new StringBuilder();
         for (List<String> i : orderedFormula) {
             output.append("(");
@@ -271,5 +257,22 @@ public class FormulasOperations {
         output.replace(output.length() - 1, output.length(), "");
         return output.toString();
     }
+}
 
+class FormulaOrderComparator implements Comparator<List<String>> {
+    @Override
+    public int compare(List<String> list1, List<String> list2) {
+        int size1 = list1.size();
+        int size2 = list2.size();
+        int minSize = Math.min(size1, size2);
+        if (size1 == size2) {
+            for (int i = 0; i < minSize; i++) {
+                int cmp = list1.get(i).compareTo(list2.get(i));
+                if (cmp != 0) {
+                    return cmp;
+                }
+            }
+        }
+        return Integer.compare(size1, size2);
+    }
 }

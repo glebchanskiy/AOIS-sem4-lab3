@@ -53,7 +53,7 @@ class TabularMethodTest {
     void calculationMinimiseTest0() {
         assertEquals(
                 example0Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example0pcnf, FormulaType.PCNF), false)
+                FormulasOperations.fromListToString(minimizator.minimise(example0pcnf, FormulaType.PCNF), FormulaType.PCNF)
         );
     }
 
@@ -61,7 +61,7 @@ class TabularMethodTest {
     void calculationMinimiseTest1() {
         assertEquals(
                 example1Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example1pdnf, FormulaType.PDNF), true)
+                FormulasOperations.fromListToString(minimizator.minimise(example1pdnf, FormulaType.PDNF), FormulaType.PDNF)
         );
     }
 
@@ -69,7 +69,7 @@ class TabularMethodTest {
     void calculationMinimiseTest2() {
         assertEquals(
                 example2Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example2pcnf, FormulaType.PCNF), false)
+                FormulasOperations.fromListToString(minimizator.minimise(example2pcnf, FormulaType.PCNF), FormulaType.PCNF)
         );
     }
 
@@ -77,7 +77,7 @@ class TabularMethodTest {
     void calculationMinimiseTest3() {
         assertEquals(
                 example3Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example3pcnf, FormulaType.PCNF), false)
+                FormulasOperations.fromListToString(minimizator.minimise(example3pcnf, FormulaType.PCNF), FormulaType.PCNF)
         );
     }
 
@@ -85,7 +85,7 @@ class TabularMethodTest {
     void calculationMinimiseTest4() {
         assertEquals(
                 example4Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example4pdnf, FormulaType.PDNF), true)
+                FormulasOperations.fromListToString(minimizator.minimise(example4pdnf, FormulaType.PDNF), FormulaType.PDNF)
         );
     }
 }

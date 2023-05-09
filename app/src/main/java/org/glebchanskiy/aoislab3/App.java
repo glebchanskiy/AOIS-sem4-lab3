@@ -61,12 +61,12 @@ public class App {
         var pcnf = FormulasOperations.getPcnfAsList(formula);
 
         var minPdnf = minimizator.minimise(pdnf, FormulaType.PDNF);
-        System.out.println("PDNF: " + FormulasOperations.fromListToString(minPdnf, true));
+        System.out.println("PDNF: " + FormulasOperations.fromListToString(minPdnf, FormulaType.PDNF));
 
         System.out.println();
 
         var minPcnf = minimizator.minimise(pcnf, FormulaType.PCNF);
-        System.out.println("PCNF: " + FormulasOperations.fromListToString(minPcnf, false));
+        System.out.println("PCNF: " + FormulasOperations.fromListToString(minPcnf, FormulaType.PCNF));
 
     }
 

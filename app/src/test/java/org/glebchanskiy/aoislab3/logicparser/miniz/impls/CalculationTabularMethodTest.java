@@ -3,9 +3,7 @@ package org.glebchanskiy.aoislab3.logicparser.miniz.impls;
 import org.glebchanskiy.aoislab3.logicparser.FormulasOperations;
 import org.glebchanskiy.aoislab3.logicparser.LogicParser;
 import org.glebchanskiy.aoislab3.logicparser.minimalization.Minimizator;
-import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.CalculationTabularMethod;
 import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.TabularMethod;
-import org.glebchanskiy.aoislab3.logicparser.minimalization.impls.utils.Gluer;
 import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -56,7 +54,7 @@ class CalculationTabularMethodTest {
     void tabularMinimiseTest0() {
         assertEquals(
                 example0Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example0pcnf, FormulaType.PCNF), false)
+                FormulasOperations.fromListToString(minimizator.minimise(example0pcnf, FormulaType.PCNF), FormulaType.PCNF)
         );
     }
 
@@ -64,7 +62,7 @@ class CalculationTabularMethodTest {
     void tabularMinimiseTest1() {
         assertEquals(
                 example1Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example1pdnf, FormulaType.PDNF), true)
+                FormulasOperations.fromListToString(minimizator.minimise(example1pdnf, FormulaType.PDNF), FormulaType.PDNF)
         );
     }
 
@@ -72,7 +70,7 @@ class CalculationTabularMethodTest {
     void tabularMinimiseTest2() {
         assertEquals(
                 example2Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example2pcnf, FormulaType.PCNF), false)
+                FormulasOperations.fromListToString(minimizator.minimise(example2pcnf, FormulaType.PCNF), FormulaType.PCNF)
         );
     }
 
@@ -80,7 +78,7 @@ class CalculationTabularMethodTest {
     void tabularMinimiseTest3() {
         assertEquals(
                 example3Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example3pcnf, FormulaType.PCNF), false)
+                FormulasOperations.fromListToString(minimizator.minimise(example3pcnf, FormulaType.PCNF), FormulaType.PCNF)
         );
     }
 
@@ -88,7 +86,7 @@ class CalculationTabularMethodTest {
     void tabularMinimiseTest4() {
         assertEquals(
                 example4Result,
-                FormulasOperations.fromListToString(minimizator.minimise(example4pdnf, FormulaType.PDNF), true)
+                FormulasOperations.fromListToString(minimizator.minimise(example4pdnf, FormulaType.PDNF), FormulaType.PDNF)
         );
     }
 }
