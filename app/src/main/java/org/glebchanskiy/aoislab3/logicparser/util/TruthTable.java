@@ -2,6 +2,7 @@ package org.glebchanskiy.aoislab3.logicparser.util;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.function.Predicate;
 
 public class TruthTable implements Iterable<TableRow> {
@@ -57,6 +58,9 @@ public class TruthTable implements Iterable<TableRow> {
 
         @Override
         public TableRow next() {
+            if(!hasNext()){
+                throw new NoSuchElementException();
+            }
             TableRow tableRow = new TableRow(
                     rows.get(cursor).getVariablesValues().clone(),
                     rows.get(cursor).isFunctionTakeTrueValue()
