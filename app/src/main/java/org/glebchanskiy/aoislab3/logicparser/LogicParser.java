@@ -1,21 +1,17 @@
 package org.glebchanskiy.aoislab3.logicparser;
 
 
-import org.glebchanskiy.aoislab3.App;
 import org.glebchanskiy.aoislab3.logicparser.ast.*;
 import org.glebchanskiy.aoislab3.logicparser.util.TableRow;
 import org.glebchanskiy.aoislab3.logicparser.util.TruthTable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class LogicParser {
     private static int pos;
-    private static final Logger log = Logger.getLogger(App.class.getName());
 
     private LogicParser() {
     }
@@ -32,7 +28,7 @@ public class LogicParser {
     private static List<String> tokenize(String formula) {
         List<String> tokens = new ArrayList<>();
 
-        String regex = "\\(|\\)|!|&|\\||\\w+"; // mathc for: ( or ) or ! or && or || or \w
+        String regex = "\\(|\\)|!|&|\\||\\w+"; // match for: ( or ) or ! or && or || or \w
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(formula);
 
@@ -53,7 +49,8 @@ public class LogicParser {
     private static List<String> identifyVariables(List<String> tokens) {
         return tokens.stream()
                 .filter(token -> token.matches("\\w+"))
-                .distinct().collect(Collectors.toList());
+                .distinct()
+                .toList();
     }
 
     private static Node buildAst(List<String> tokens) {
