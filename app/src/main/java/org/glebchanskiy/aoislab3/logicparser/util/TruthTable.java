@@ -3,7 +3,6 @@ package org.glebchanskiy.aoislab3.logicparser.util;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class TruthTable implements Iterable<TableRow> {
     private final List<TableRow> rows;
@@ -16,20 +15,20 @@ public class TruthTable implements Iterable<TableRow> {
         return rows.stream()
                 .filter(TableRow::isFunctionTakeTrueValue)
                 .map(TableRow::getVariablesValues)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Boolean[]> getFalses() {
         return rows.stream()
                 .filter(Predicate.not(TableRow::isFunctionTakeTrueValue))
                 .map(TableRow::getVariablesValues)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public List<Boolean[]> getAllRows() {
         return rows.stream()
                 .map(TableRow::getVariablesValues)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public Boolean[] getIndex() {
