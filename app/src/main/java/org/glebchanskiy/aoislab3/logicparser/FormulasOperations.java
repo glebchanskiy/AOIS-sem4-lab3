@@ -7,6 +7,7 @@ import org.glebchanskiy.aoislab3.logicparser.util.FormulaType;
 import org.glebchanskiy.aoislab3.logicparser.util.TableRow;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 
 public class FormulasOperations {
@@ -49,7 +50,7 @@ public class FormulasOperations {
         for (int i = 0; i < values.size(); i++) {
             output.append('(');
             for (int j = 0; j < values.get(i).length; j++) {
-                output.append(Boolean.TRUE.equals(values.get(i)[j]) ? "!" + (char)(65+j) : (char)(65+j));
+                output.append(Boolean.TRUE.equals(values.get(i)[j]) ? "!" + (char) (65 + j) : (char) (65 + j));
                 if (j != values.get(i).length - 1)
                     output.append("|");
             }
@@ -83,7 +84,7 @@ public class FormulasOperations {
         for (int i = 0; i < values.size(); i++) {
             output.append('(');
             for (int j = 0; j < values.get(i).length; j++) {
-                output.append(Boolean.TRUE.equals(values.get(i)[j]) ? (char)(65+j) : "!" + (char)(65+j));
+                output.append(Boolean.TRUE.equals(values.get(i)[j]) ? (char) (65 + j) : "!" + (char) (65 + j));
                 if (j != values.get(i).length - 1)
                     output.append("&");
             }
@@ -111,17 +112,7 @@ public class FormulasOperations {
 
     public static String getPdnfBin(LogicFormula logicFormula) {
         List<Boolean[]> pdnf = logicFormula.getTruthTable().getTruths();
-        List<String> pdnfInnerBrackets = new ArrayList<>();
-
-        pdnf.forEach(row ->
-                pdnfInnerBrackets.add(
-                        Arrays.stream(row)
-                                .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
-                                .reduce((accum, bin) -> accum += bin)
-                                .orElse("")
-                )
-        );
-
+        List<String> pdnfInnerBrackets = fromBoolToString(pdnf);
         StringBuilder result = new StringBuilder();
 
         for (String bracket : pdnfInnerBrackets)
@@ -136,34 +127,14 @@ public class FormulasOperations {
 
     public static String getPdnfDig(LogicFormula logicFormula) {
         List<Boolean[]> pdnf = logicFormula.getTruthTable().getTruths();
-        List<Integer> pdnfInnerBracketsDig = new ArrayList<>();
-
-        pdnf.forEach(row ->
-                pdnfInnerBracketsDig.add(
-                        toDecimal(
-                                Arrays.stream(row)
-                                        .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
-                                        .reduce((accum, bin) -> accum += bin)
-                                        .orElse("")
-                        )
-                )
-        );
+        List<Integer> pdnfInnerBracketsDig = fromBoolToInteger(pdnf);
 
         return "PDNF: " + pdnfInnerBracketsDig;
     }
 
     public static String getPcnfBin(LogicFormula logicFormula) {
         List<Boolean[]> pcnf = logicFormula.getTruthTable().getFalses();
-        List<String> pcnfInnerBrackets = new ArrayList<>();
-
-        pcnf.forEach(row ->
-                pcnfInnerBrackets.add(
-                        Arrays.stream(row)
-                                .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
-                                .reduce((accum, bin) -> accum += bin)
-                                .orElse("")
-                )
-        );
+        List<String> pcnfInnerBrackets = fromBoolToString(pcnf);
 
         StringBuilder result = new StringBuilder();
 
@@ -180,18 +151,7 @@ public class FormulasOperations {
 
     public static String getPcnfDig(LogicFormula logicFormula) {
         List<Boolean[]> pcnf = logicFormula.getTruthTable().getFalses();
-        List<Integer> pcnfInnerBracketsDig = new ArrayList<>();
-
-        pcnf.forEach(row ->
-                pcnfInnerBracketsDig.add(
-                        toDecimal(
-                                Arrays.stream(row)
-                                        .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
-                                        .reduce((accum, bin) -> accum += bin)
-                                        .orElse("")
-                        )
-                )
-        );
+        List<Integer> pcnfInnerBracketsDig = fromBoolToInteger(pcnf);
 
         return "PCNF: " + pcnfInnerBracketsDig;
     }
@@ -257,6 +217,25 @@ public class FormulasOperations {
         }
         output.replace(output.length() - 1, output.length(), "");
         return output.toString();
+    }
+
+    private static List<String> fromBoolToString(List<Boolean[]> formula) {
+        return formula.stream()
+                .map(inner -> Arrays.stream(inner)
+                        .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
+                        .reduce((accum, bin) -> accum += bin)
+                        .orElse("")
+                ).toList();
+
+    }
+
+    private static List<Integer> fromBoolToInteger(List<Boolean[]> formula) {
+        return formula.stream().map(inner -> Stream.of(inner)
+                        .map(b -> Boolean.TRUE.equals(b) ? "1" : "0")
+                        .reduce((accum, bin) -> accum += bin)
+                        .orElse(""))
+                .map(FormulasOperations::toDecimal)
+                .toList();
     }
 }
 
