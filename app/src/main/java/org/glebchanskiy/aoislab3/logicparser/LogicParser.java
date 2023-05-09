@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 public class LogicParser {
-    static private int pos;
+    private static int pos;
     private static final Logger log = Logger.getLogger(App.class.getName());
 
     private LogicParser() {
@@ -29,7 +29,7 @@ public class LogicParser {
         return new LogicFormula(expression, variables, truthTable, root);
     }
 
-    static private List<String> tokenize(String formula) {
+    private static List<String> tokenize(String formula) {
         List<String> tokens = new ArrayList<>();
 
         String regex = "\\(|\\)|!|&|\\||\\w+"; // mathc for: ( or ) or ! or && or || or \w
@@ -50,18 +50,18 @@ public class LogicParser {
         return tokens;
     }
 
-    static private List<String> identifyVariables(List<String> tokens) {
+    private static List<String> identifyVariables(List<String> tokens) {
         return tokens.stream()
                 .filter(token -> token.matches("\\w+"))
                 .distinct().collect(Collectors.toList());
     }
 
-    static private Node buildAst(List<String> tokens) {
+    private static Node buildAst(List<String> tokens) {
         pos = 0;
         return parseExpression(tokens);
     }
 
-    static private Node parseExpression(List<String> tokens) {
+    private static Node parseExpression(List<String> tokens) {
         Node left = parseTerm(tokens);
 
         if (pos + 1 < tokens.size()) {
@@ -80,7 +80,7 @@ public class LogicParser {
         return left;
     }
 
-    static private Node parseTerm(List<String> tokens) {
+    private static Node parseTerm(List<String> tokens) {
         String token = tokens.get(pos);
 
         if (token.equals("!")) {
